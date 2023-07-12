@@ -20,6 +20,11 @@ class PizzaViewModel @Inject constructor() : ViewModel() {
         getSingleIngredients()
     }
 
+
+    fun updatePizzaSize(newPizzaSize: Char) {
+        _state.update { it.copy(pizzaSize = newPizzaSize) }
+    }
+
     private fun getBreads() {
         _state.update {
             it.copy(
@@ -47,6 +52,7 @@ class PizzaViewModel @Inject constructor() : ViewModel() {
             )
         }
     }
+
     private fun getSingleIngredients() {
         _state.update {
             it.copy(
