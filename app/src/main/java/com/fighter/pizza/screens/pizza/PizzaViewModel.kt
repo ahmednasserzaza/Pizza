@@ -1,13 +1,14 @@
 package com.fighter.pizza.screens.pizza
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.fighter.pizza.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
-import kotlin.math.sin
 
 @HiltViewModel
 class PizzaViewModel @Inject constructor() : ViewModel() {
@@ -66,5 +67,49 @@ class PizzaViewModel @Inject constructor() : ViewModel() {
             )
         }
     }
+
+    fun updateIngredientState(ingredientIndex: Int, currentPage: Int, imageVisibility: Boolean) {
+        val currentIngredient = _state.value.ingredientState.toMutableList()
+        val currentToppingImage = getIngredientImageRes(ingredientIndex)
+        val updatedToppings = state.value.toppings.toMutableList()
+
+        currentIngredient[ingredientIndex] = !currentIngredient[ingredientIndex]
+        _state.update { currentState ->
+            updatedToppings[ingredientIndex] = currentState.toppings[ingredientIndex].copy(
+                first = currentToppingImage,
+                second = imageVisibility
+            )
+            currentState.copy(
+                ingredientState = currentIngredient,
+                currentPage = currentPage,
+                toppings = updatedToppings
+            )
+        }
+    }
+
+
+//    fun updateToppings(currentPage: Int, imageVisibility: Boolean, toppingIndex: Int) {
+//        val currentToppingImage = getIngredientImageRes(toppingIndex)
+//        _state.update { currentState ->
+//            val updatedToppings = state.value.toppings.toMutableList()
+//            updatedToppings[toppingIndex] = currentState.toppings[toppingIndex].copy(
+//                first = currentToppingImage,
+//                second = imageVisibility
+//            )
+//            currentState.copy(currentPage = currentPage, toppings = updatedToppings)
+//        }
+//    }
+
+    private fun getIngredientImageRes(index: Int): Int {
+        return when (index) {
+            0 -> R.drawable.mashrum
+            1 -> R.drawable.onion
+            2 -> R.drawable.susage
+            3 -> R.drawable.broccoli
+            4 -> R.drawable.basil
+            else -> throw IllegalArgumentException("Invalid ingredient index: $index")
+        }
+    }
+
 
 }

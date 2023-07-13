@@ -42,7 +42,12 @@ fun PizzaScreen(viewModel: PizzaViewModel = hiltViewModel()) {
     val pizzaState by viewModel.state.collectAsState()
     val pagerState = rememberPagerState(initialPage = 0)
 
-    PizzaContent(pizzaState, pagerState, viewModel::updatePizzaSize)
+    PizzaContent(
+        pizzaState,
+        pagerState,
+        viewModel::updatePizzaSize,
+        viewModel::updateIngredientState,
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -50,10 +55,13 @@ fun PizzaScreen(viewModel: PizzaViewModel = hiltViewModel()) {
 fun PizzaContent(
     pizzaState: PizzaUiState,
     pagerState: PagerState,
-    onClickPizzaSize: (Char) -> Unit
+    onClickPizzaSize: (Char) -> Unit,
+    onClickIngredient: (Int, Int, Boolean) -> Unit,
 ) {
     Column(
-        modifier = Modifier.fillMaxSize().background(Color.White),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
@@ -68,8 +76,9 @@ fun PizzaContent(
             PizzaSlider(
                 breads = pizzaState.breads,
                 pagerState = pagerState,
-                ingredients = pizzaState.ingredients,
-                pizzaSizeState = pizzaState.pizzaSize
+                toppings = pizzaState.toppings,
+                pizzaSizeState = pizzaState.pizzaSize,
+                currentPage = pizzaState.currentPage,
             )
         }
 
@@ -109,7 +118,13 @@ fun PizzaContent(
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             items(pizzaState.singleIngredient) {
-                CardPizzaIngredient(painter = painterResource(id = it))
+                CardPizzaIngredient(
+                    painter = painterResource(id = it),
+                    index = pizzaState.singleIngredient.indexOf(it),
+                    onUpdateToppingsState = onClickIngredient,
+                    currentPage = pagerState.currentPage,
+                    isSelected = pizzaState.ingredientState[pizzaState.singleIngredient.indexOf(it)],
+                )
             }
         }
 
