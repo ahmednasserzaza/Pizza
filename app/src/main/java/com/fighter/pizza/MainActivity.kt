@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.fighter.pizza.screens.pizza.PizzaScreen
 import com.fighter.pizza.ui.theme.PizzaTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,6 +19,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            PizzaScreen()
         }
     }
 }
@@ -26,5 +28,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     PizzaTheme {
+        PizzaScreen()
     }
 }
