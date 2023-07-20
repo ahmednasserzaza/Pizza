@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
@@ -117,13 +118,13 @@ fun PizzaContent(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            items(pizzaState.singleIngredient) {
+            itemsIndexed(pizzaState.singleIngredient) {index , item ->
                 CardPizzaIngredient(
-                    painter = painterResource(id = it),
-                    index = pizzaState.singleIngredient.indexOf(it),
+                    painter = painterResource(id = item),
+                    index = index,
                     onUpdateToppingsState = onClickIngredient,
                     currentPage = pagerState.currentPage,
-                    isSelected = pizzaState.ingredientState[pizzaState.singleIngredient.indexOf(it)],
+                    isSelected = pizzaState.ingredientState[index],
                 )
             }
         }

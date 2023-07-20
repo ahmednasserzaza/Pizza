@@ -79,11 +79,18 @@ class PizzaViewModel @Inject constructor() : ViewModel() {
                 first = currentToppingImage,
                 second = imageVisibility
             )
-            currentState.copy(
-                ingredientState = currentIngredient,
-                currentPage = currentPage,
-                toppings = updatedToppings
-            )
+            if (currentState.currentPage == currentPage){
+                currentState.copy(
+                    ingredientState = currentIngredient,
+                    currentPage = currentPage,
+                    toppings = updatedToppings
+                )
+            }else{
+                currentState.copy(
+                    currentPage = currentPage,
+                )
+            }
+
         }
     }
 
