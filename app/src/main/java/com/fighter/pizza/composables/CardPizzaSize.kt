@@ -1,5 +1,6 @@
 package com.fighter.pizza.composables
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -20,14 +21,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fighter.pizza.data.entity.PizzaSize
+import com.fighter.pizza.screens.pizza.HomeUiState
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardPizzaSize(
     modifier: Modifier = Modifier,
     size: String,
     updatePizzaSize: (PizzaSize) -> Unit,
-
     ) {
     Card(
         modifier = modifier

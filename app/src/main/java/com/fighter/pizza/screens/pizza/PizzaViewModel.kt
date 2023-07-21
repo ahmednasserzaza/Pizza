@@ -25,6 +25,8 @@ class PizzaViewModel @Inject constructor(
     init {
         getBreads()
         getToppings()
+        Log.e("topping : " , "${state.value.pizzas}")
+
     }
 
     fun updateToppingState(type: Topping, isActive: Boolean) {
@@ -60,15 +62,14 @@ class PizzaViewModel @Inject constructor(
     }
 
     private fun getToppings() {
-        _state.update { it.copy(pizzas = getBreadsUseCase().toPizzaUiState()) }
-    }
-
-    private fun getBreads() {
         _state.update {
             it.copy(pizzas = it.pizzas.map { pizzaUiState ->
                 pizzaUiState.copy(toppings = getToppingsUseCase().toToppingUiState())
             })
-        }
+        }    }
+
+    private fun getBreads() {
+        _state.update { it.copy(pizzas = getBreadsUseCase().toPizzaUiState()) }
     }
 
 

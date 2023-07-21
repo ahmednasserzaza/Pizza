@@ -18,16 +18,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.fighter.pizza.data.entity.Topping
 import com.fighter.pizza.screens.pizza.HomeUiState
 import com.fighter.pizza.ui.theme.CardToppingColor
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardPizzaIngredient(
     modifier: Modifier = Modifier,
-    painter: Painter,
     topping: HomeUiState.ToppingUiState,
     updateToppingState: (type: Topping, isActive: Boolean) -> Unit,
 ) {
@@ -39,7 +38,7 @@ fun CardPizzaIngredient(
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }) {
-                    updateToppingState(topping.type , !topping.isActive)
+                updateToppingState(topping.type, !topping.isActive)
             },
         shape = CircleShape,
         colors = CardDefaults.cardColors(containerColor = cardColor.value)
@@ -47,7 +46,7 @@ fun CardPizzaIngredient(
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Image(
                 modifier = Modifier.size(48.dp),
-                painter = painter,
+                painter = painterResource(id = topping.singleItemImageRes),
                 contentDescription = "",
                 alignment = Alignment.Center
             )

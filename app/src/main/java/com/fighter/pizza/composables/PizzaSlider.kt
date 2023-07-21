@@ -28,6 +28,7 @@ import com.fighter.pizza.screens.pizza.HomeUiState
 @Composable
 fun PizzaSlider(
     state: HomeUiState,
+    updateCurrentPizza: (Int) -> Unit
 ) {
     val pagerState = rememberPagerState()
     val imageSizeAnimation = animateFloatAsState(
@@ -51,6 +52,7 @@ fun PizzaSlider(
         state = pagerState,
         verticalAlignment = Alignment.CenterVertically
     ) { page ->
+        updateCurrentPizza(pagerState.currentPage)
 
         Box(
             modifier = Modifier.aspectRatio(0.85f),
@@ -65,8 +67,8 @@ fun PizzaSlider(
                 state.pizzas[state.currentPizzaIndex].toppings.reversed().forEach {
                     AnimatedVisibility(
                         visible = it.isActive && page == pagerState.currentPage,
-                        enter = scaleIn(initialScale = 2f) + fadeIn(),
-                        exit = fadeOut()
+                        enter = scaleIn(initialScale = 4f) + fadeIn(),
+                        exit = fadeOut(animationSpec = tween(10))
                     ) {
                         Image(
                             modifier = Modifier.fillMaxSize(imageToppingAnimation.value),
@@ -86,20 +88,6 @@ fun PizzaSlider(
                     }
             }
 
-//                toppings.forEach { (imageRes, isVisible) ->
-//                    AnimatedVisibility(
-//                        visible = isVisible,
-//                        enter = scaleIn(initialScale = 4f),
-//                        exit = fadeOut(animationSpec = tween(10))
-//                    ) {
-//                        Image(
-//                            modifier = Modifier.fillMaxSize(imageToppingAnimation.value),
-//                            painter = painterResource(id = imageRes),
-//                            contentDescription = "pizza content",
-//                        )
-//                    }
-//
-//                }
 
         }
     }

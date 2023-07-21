@@ -1,5 +1,6 @@
 package com.fighter.pizza.screens.pizza
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -51,7 +52,6 @@ fun PizzaScreen(viewModel: PizzaViewModel = hiltViewModel()) {
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PizzaContent(
     state: HomeUiState,
@@ -74,7 +74,7 @@ fun PizzaContent(
                 .fillMaxHeight(1 / 3f)
         ) {
             PlateImage(painter = painterResource(id = R.drawable.plate))
-            PizzaSlider(state)
+            PizzaSlider(state , updateCurrentPizza)
         }
 
         TextPrice(price = "$17")
@@ -101,7 +101,6 @@ fun PizzaContent(
         ) {
             items(state.pizzas[state.currentPizzaIndex].toppings) { item ->
                 CardPizzaIngredient(
-                    painter = painterResource(id = item.singleItemImageRes),
                     topping = item,
                     updateToppingState = updateToppingState
                 )
