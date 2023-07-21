@@ -28,7 +28,7 @@ fun CardPizzaSize(
     modifier: Modifier = Modifier,
     size: String,
     updatePizzaSize: (PizzaSize) -> Unit,
-    ) {
+) {
     Card(
         modifier = modifier
             .clickable(
