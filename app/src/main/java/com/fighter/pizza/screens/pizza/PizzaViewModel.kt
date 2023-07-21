@@ -4,6 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fighter.pizza.R
+import com.fighter.pizza.data.entity.PizzaSize
+import com.fighter.pizza.data.entity.Topping
+import com.fighter.pizza.domain.usecase.GetBreadsUseCase
+import com.fighter.pizza.domain.usecase.GetToppingsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,111 +15,65 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
-class PizzaViewModel @Inject constructor() : ViewModel() {
-    private val _state = MutableStateFlow(PizzaUiState())
+class PizzaViewModel @Inject constructor(
+    private val getBreadsUseCase: GetBreadsUseCase,
+    private val getToppingsUseCase: GetToppingsUseCase
+) : ViewModel() {
+    private val _state = MutableStateFlow(HomeUiState())
     val state = _state.asStateFlow()
 
     init {
         getBreads()
-        getIngredients()
-        getSingleIngredients()
+        getToppings()
     }
 
+    fun updateToppingState(type: Topping, isActive: Boolean) {
+        _state.update {
+            it.copy(
+                pizzas = it.pizzas.mapIndexed { index, pizza ->
+                    if (index == _state.value.currentPizzaIndex) {
+                        pizza.copy(toppings = pizza.toppings.map { topping ->
+                            if (topping.type == type) {
+                                topping.copy(isActive = isActive)
+                            } else {
+                                topping
+                            }
+                        })
+                    } else {
+                        pizza
+                    }
+                }
+            )
+        }
+    }
 
-    fun updatePizzaSize(newPizzaSize: Char) {
-        _state.update { it.copy(pizzaSize = newPizzaSize) }
+    fun updatePizzaSize(pizzaSize: PizzaSize) {
+        _state.update {
+            it.copy(pizzas = it.pizzas.mapIndexed { index, pizza ->
+                if (index == _state.value.currentPizzaIndex) {
+                    pizza.copy(size = pizzaSize)
+                } else {
+                    pizza
+                }
+            })
+        }
+    }
+
+    private fun getToppings() {
+        _state.update { it.copy(pizzas = getBreadsUseCase().toPizzaUiState()) }
     }
 
     private fun getBreads() {
         _state.update {
-            it.copy(
-                breads = listOf(
-                    R.drawable.bread_1,
-                    R.drawable.bread_2,
-                    R.drawable.bread_3,
-                    R.drawable.bread_4,
-                    R.drawable.bread_5,
-                )
-            )
-        }
-    }
-
-    private fun getIngredients() {
-        _state.update {
-            it.copy(
-                ingredients = listOf(
-                    R.drawable.mashrum,
-                    R.drawable.onion,
-                    R.drawable.susage,
-                    R.drawable.broccoli,
-                    R.drawable.basil,
-                )
-            )
-        }
-    }
-
-    private fun getSingleIngredients() {
-        _state.update {
-            it.copy(
-                singleIngredient = listOf(
-                    R.drawable.mushroom_1,
-                    R.drawable.onion_1,
-                    R.drawable.sausage_1,
-                    R.drawable.broccoli_1,
-                    R.drawable.basil_1,
-                )
-            )
-        }
-    }
-
-    fun updateIngredientState(ingredientIndex: Int, currentPage: Int, imageVisibility: Boolean) {
-        val currentIngredient = _state.value.ingredientState.toMutableList()
-        val currentToppingImage = getIngredientImageRes(ingredientIndex)
-        val updatedToppings = state.value.toppings.toMutableList()
-
-        currentIngredient[ingredientIndex] = !currentIngredient[ingredientIndex]
-        _state.update { currentState ->
-            updatedToppings[ingredientIndex] = currentState.toppings[ingredientIndex].copy(
-                first = currentToppingImage,
-                second = imageVisibility
-            )
-            if (currentState.currentPage == currentPage){
-                currentState.copy(
-                    ingredientState = currentIngredient,
-                    currentPage = currentPage,
-                    toppings = updatedToppings
-                )
-            }else{
-                currentState.copy(
-                    currentPage = currentPage,
-                )
-            }
-
+            it.copy(pizzas = it.pizzas.map { pizzaUiState ->
+                pizzaUiState.copy(toppings = getToppingsUseCase().toToppingUiState())
+            })
         }
     }
 
 
-//    fun updateToppings(currentPage: Int, imageVisibility: Boolean, toppingIndex: Int) {
-//        val currentToppingImage = getIngredientImageRes(toppingIndex)
-//        _state.update { currentState ->
-//            val updatedToppings = state.value.toppings.toMutableList()
-//            updatedToppings[toppingIndex] = currentState.toppings[toppingIndex].copy(
-//                first = currentToppingImage,
-//                second = imageVisibility
-//            )
-//            currentState.copy(currentPage = currentPage, toppings = updatedToppings)
-//        }
-//    }
-
-    private fun getIngredientImageRes(index: Int): Int {
-        return when (index) {
-            0 -> R.drawable.mashrum
-            1 -> R.drawable.onion
-            2 -> R.drawable.susage
-            3 -> R.drawable.broccoli
-            4 -> R.drawable.basil
-            else -> throw IllegalArgumentException("Invalid ingredient index: $index")
-        }
+    fun updateCurrentPizza(currentPizzaIndex: Int) {
+        _state.update { it.copy(currentPizzaIndex = currentPizzaIndex) }
     }
 
 

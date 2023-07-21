@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -36,6 +34,8 @@ import com.fighter.pizza.composables.PizzaHeader
 import com.fighter.pizza.composables.PizzaSlider
 import com.fighter.pizza.composables.PlateImage
 import com.fighter.pizza.composables.TextPrice
+import com.fighter.pizza.data.entity.PizzaSize
+import com.fighter.pizza.data.entity.Topping
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -44,20 +44,20 @@ fun PizzaScreen(viewModel: PizzaViewModel = hiltViewModel()) {
     val pagerState = rememberPagerState(initialPage = 0)
 
     PizzaContent(
-        pizzaState,
-        pagerState,
-        viewModel::updatePizzaSize,
-        viewModel::updateIngredientState,
+        state = pizzaState,
+        updateToppingState = viewModel::updateToppingState,
+        updatePizzaSize = viewModel::updatePizzaSize,
+        updateCurrentPizza = viewModel::updateCurrentPizza
     )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PizzaContent(
-    pizzaState: PizzaUiState,
-    pagerState: PagerState,
-    onClickPizzaSize: (Char) -> Unit,
-    onClickIngredient: (Int, Int, Boolean) -> Unit,
+    state: HomeUiState,
+    updateToppingState: (type: Topping, isActive: Boolean) -> Unit,
+    updatePizzaSize: (PizzaSize) -> Unit,
+    updateCurrentPizza: (Int) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -74,13 +74,7 @@ fun PizzaContent(
                 .fillMaxHeight(1 / 3f)
         ) {
             PlateImage(painter = painterResource(id = R.drawable.plate))
-            PizzaSlider(
-                breads = pizzaState.breads,
-                pagerState = pagerState,
-                toppings = pizzaState.toppings,
-                pizzaSizeState = pizzaState.pizzaSize,
-                currentPage = pizzaState.currentPage,
-            )
+            PizzaSlider(state)
         }
 
         TextPrice(price = "$17")
@@ -93,22 +87,9 @@ fun PizzaContent(
             horizontalArrangement =
             Arrangement.spacedBy(16.dp, alignment = Alignment.CenterHorizontally)
         ) {
-            CardPizzaSize(
-                currentSize = stringResource(R.string.small).first(),
-                onClickSize = onClickPizzaSize,
-                sizeState = pizzaState.pizzaSize
-            )
-            CardPizzaSize(
-                currentSize = stringResource(R.string.medium).first(),
-                onClickSize = onClickPizzaSize,
-                sizeState = pizzaState.pizzaSize
-
-            )
-            CardPizzaSize(
-                currentSize = stringResource(R.string.large).first(),
-                onClickSize = onClickPizzaSize,
-                sizeState = pizzaState.pizzaSize
-            )
+            CardPizzaSize(size = "S", updatePizzaSize = updatePizzaSize)
+            CardPizzaSize(size = "M", updatePizzaSize = updatePizzaSize)
+            CardPizzaSize(size = "L", updatePizzaSize = updatePizzaSize)
         }
 
         IngredientHeader(text = stringResource(R.string.customize_your_pizza))
@@ -118,13 +99,11 @@ fun PizzaContent(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            itemsIndexed(pizzaState.singleIngredient) {index , item ->
+            items(state.pizzas[state.currentPizzaIndex].toppings) { item ->
                 CardPizzaIngredient(
-                    painter = painterResource(id = item),
-                    index = index,
-                    onUpdateToppingsState = onClickIngredient,
-                    currentPage = pagerState.currentPage,
-                    isSelected = pizzaState.ingredientState[index],
+                    painter = painterResource(id = item.singleItemImageRes),
+                    topping = item,
+                    updateToppingState = updateToppingState
                 )
             }
         }
