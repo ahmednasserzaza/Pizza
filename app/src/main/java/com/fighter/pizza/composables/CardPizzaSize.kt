@@ -23,35 +23,34 @@ import androidx.compose.ui.unit.sp
 import com.fighter.pizza.data.entity.PizzaSize
 import com.fighter.pizza.screens.pizza.HomeUiState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardPizzaSize(
     modifier: Modifier = Modifier,
     size: String,
     updatePizzaSize: (PizzaSize) -> Unit,
+    sizeChar: Char,
 ) {
+    val cardElevation = animateDpAsState(targetValue = if (sizeChar.toString() == size) 6.dp else 0.dp  )
     Card(
-        modifier = modifier
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }) {
-                when (size) {
-                    "S" -> {
-                        updatePizzaSize(PizzaSize.Small)
-                    }
-
-                    "M" -> {
-                        updatePizzaSize(PizzaSize.Medium)
-                    }
-
-                    else -> {
-                        updatePizzaSize(PizzaSize.Large)
-                    }
+        onClick = {
+            when (size) {
+                "S" -> {
+                    updatePizzaSize(PizzaSize.Small)
+                }
+                "M" -> {
+                    updatePizzaSize(PizzaSize.Medium)
+                }
+                "L" -> {
+                    updatePizzaSize(PizzaSize.Large)
                 }
             }
+        },
+        modifier = modifier
             .size(48.dp),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = cardElevation.value)
     ) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(

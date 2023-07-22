@@ -15,6 +15,7 @@ data class HomeUiState(
         @DrawableRes val breadImageRes: Int = R.drawable.bread_1,
         val toppings: List<ToppingUiState> = emptyList(),
         val size: PizzaSize = PizzaSize.Medium,
+        val sizeChar: Char = 'M'
     )
 
     data class ToppingUiState(

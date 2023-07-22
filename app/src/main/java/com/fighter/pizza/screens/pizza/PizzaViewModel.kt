@@ -2,8 +2,6 @@ package com.fighter.pizza.screens.pizza
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.fighter.pizza.R
 import com.fighter.pizza.data.entity.PizzaSize
 import com.fighter.pizza.data.entity.Topping
 import com.fighter.pizza.domain.usecase.GetBreadsUseCase
@@ -53,7 +51,12 @@ class PizzaViewModel @Inject constructor(
         _state.update {
             it.copy(pizzas = it.pizzas.mapIndexed { index, pizza ->
                 if (index == _state.value.currentPizzaIndex) {
-                    pizza.copy(size = pizzaSize)
+                   val newSizeChar =  when(pizzaSize){
+                        PizzaSize.Large -> 'L'
+                        PizzaSize.Medium -> 'M'
+                        PizzaSize.Small -> 'S'
+                    }
+                    pizza.copy(size = pizzaSize , sizeChar = newSizeChar)
                 } else {
                     pizza
                 }
